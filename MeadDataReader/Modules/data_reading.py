@@ -82,8 +82,6 @@ class SignalBuilder:
          for elem in self.__signal:
              x_data.append(self.select_data(dimx, elem))
              y_data.append(self.select_data(dimy, elem))
-        #METTERE LE ISTRUZIONI DI PLOT DEL GRAFICO QUI
-
          return [x_data, y_data]
 
     @property
