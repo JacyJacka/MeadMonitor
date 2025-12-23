@@ -1,15 +1,23 @@
-from Modules.data_reading import SignalBuilder
 from matplotlib import pyplot as plt
+from Modules.data_reading import SignalBuilder
+from Modules.data_analysis import Plot_data_and_regresssion
+
 
 signal = SignalBuilder("SignalExample.txt")
 signal.ReadFromFile()
 
 XLABEL="time"
 YLABEL="gravity"
+REGR_SIZE = 5000
 
-x_data, y_data = signal.generate_array(dimx=XLABEL, dimy=YLABEL)
+x_data, y_data = signal.signal_time, signal.signal_gravity
 
-plt.plot(x_data, y_data, color="red")
-plt.xlabel(XLABEL)
-plt.ylabel(YLABEL)
-plt.show()
+f = lambda x, m, q: m*x + q
+popt, cov = Plot_data_and_regresssion(x_data, y_data,
+                                      XLABEL=XLABEL, YLABEL=YLABEL, plot_color="red",
+                                      regression_size = REGR_SIZE, regression_color = "blue",
+                                      regression_function = f)
+
+print("popt:",popt)
+print ("cov:",cov)
+
