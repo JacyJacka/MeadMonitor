@@ -2,7 +2,9 @@ Follow these steps in order, waiting for user input at each stage before proceed
 
 ## Step 1 — Branch
 
-Run `git branch` to list existing branches and identify the current one.
+Run `git fetch --dry-run 2>&1` to check whether the remote has commits or branches not present locally. If there is any output (i.e. the remote has new content), inform the user and run `git fetch` to pull down the remote refs. If there is no output, tell the user "No remote changes found, skipping fetch."
+
+Then run `git branch` to list existing branches and identify the current one.
 
 Ask the user: "Which branch should changes be committed to?" Show the current branch as the default option. If the user names a branch that does not exist in the output of `git branch`, create it with `git checkout -b <branch>`. If it already exists, check it out with `git checkout <branch>` (unless it is already the current branch, in which case skip).
 
