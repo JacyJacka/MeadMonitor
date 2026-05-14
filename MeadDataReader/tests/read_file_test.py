@@ -1,62 +1,59 @@
 import unittest
-from MeadDataReader.Modules.data_reading import *
+from MeadDataReader.Modules.data_reading import SignalBuilder
 
 
-class PointAndFileTests(unittest.TestCase):
+class SignalBuilderTests(unittest.TestCase):
 
-    # def test_point_class(self):
-    #     p = point()
-    #     self.assertEqual(p.time, 0)
-    #     self.assertEqual(p.temperature, 0)
-    #     self.assertEqual(p.gravity, 0)
-    #
-    # def test_poit_parse(self):
-    #     p = point(["a", "b", "c"])
-    #     self.assertEqual(p.time, 0)
-    #     self.assertEqual(p.temperature, 0)
-    #     self.assertEqual(p.gravity, 0)
-    #
-    # def test_point_operators(self):
-    #     p1 = point([1,2,3])
-    #     p2 = point([1,2,3])
-    #     self.assertEqual(p1, p2)
-    #
-    # def test_select_data(self):
-    #     p1 = point([1,2,3])
-    #     builder = SignalBuilder()
-    #     self.assertEqual(p1.time, builder.select_data("time", p1))
-    #     self.assertEqual(p1.gravity, builder.select_data("gravity", p1))
-    #     self.assertEqual(p1.temperature, builder.select_data("temperature", p1))
-    #     self.assertEqual(-1000, builder.select_data("pippo", p1))
+    def test_default_state(self):
+        builder = SignalBuilder()
+        self.assertEqual(builder.filename, "")
+        self.assertEqual(builder.signal_time, [])
+        self.assertEqual(builder.signal_gravity, [])
+        self.assertEqual(builder.signal_temperature, [])
 
+    def test_filename_in_constructor(self):
+        builder = SignalBuilder("somefile.txt")
+        self.assertEqual(builder.filename, "somefile.txt")
+
+    def test_filename_setter(self):
+        builder = SignalBuilder()
+        builder.filename = "newfile.txt"
+        self.assertEqual(builder.filename, "newfile.txt")
 
     def test_read_file(self):
-        filename = "MeadDataReader/tests/file_test.txt"
-        ben_time = [1,4,7]
-        ben_gravity = [2,5,8]
-        ben_temperature = [3,6,9]
-        data_holder = SignalBuilder()
-        data_holder.filename = filename
-        self.assertEqual(filename, data_holder.filename)
-        data_holder.ReadFromFile()
-        self.assertEqual(ben_time, data_holder.signal_time)
-        self.assertEqual(ben_gravity, data_holder.signal_gravity)
-        self.assertEqual(ben_temperature, data_holder.signal_temperature)
+        builder = SignalBuilder("MeadDataReader/tests/file_test.txt")
+        builder.ReadFromFile()
+        self.assertEqual(builder.signal_time, [1.0, 4.0, 7.0])
+        self.assertEqual(builder.signal_gravity, [2.0, 5.0, 8.0])
+        self.assertEqual(builder.signal_temperature, [3.0, 6.0, 9.0])
 
-    #
-    # def test_generate_array(self):
-    #     filename = "MeadDataReader/tests/file_test.txt"
-    #     ben_x = [1.0, 4.0]
-    #     ben_y = [2.0, 5.0]
-    #     data_holder = SignalBuilder()
-    #     data_holder.filename = filename
-    #     self.assertEqual(filename, data_holder.filename)
-    #     data_holder.ReadFromFile()
-    #     arr_x, arr_y =data_holder.generate_array("time", "gravity")
-    #     for i in range(0, len(ben_x)):
-    #         self.assertEqual(ben_x[i], arr_x[i])
-    #     for i in range(0, len(ben_y)):
-    #         self.assertEqual(ben_y[i], arr_y[i])
+    def test_read_file_twice_does_not_duplicate(self):
+        builder = SignalBuilder("MeadDataReader/tests/file_test.txt")
+        builder.ReadFromFile()
+        builder.ReadFromFile()
+        self.assertEqual(len(builder.signal_time), 3)
+        self.assertEqual(len(builder.signal_gravity), 3)
+        self.assertEqual(len(builder.signal_temperature), 3)
+
+    def test_read_nonexistent_file_raises(self):
+        builder = SignalBuilder("nonexistent_file.txt")
+        with self.assertRaises(FileNotFoundError):
+            builder.ReadFromFile()
+
+    def test_read_empty_file(self):
+        builder = SignalBuilder("MeadDataReader/tests/empty_test.txt")
+        builder.ReadFromFile()
+        self.assertEqual(builder.signal_time, [])
+        self.assertEqual(builder.signal_gravity, [])
+        self.assertEqual(builder.signal_temperature, [])
+
+    def test_str_representation(self):
+        builder = SignalBuilder("test.txt")
+        self.assertIn("test.txt", str(builder))
+
+    def test_repr_representation(self):
+        builder = SignalBuilder("test.txt")
+        self.assertIn("test.txt", repr(builder))
 
 
 if __name__ == '__main__':
