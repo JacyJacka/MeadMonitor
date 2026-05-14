@@ -1,5 +1,3 @@
-# Default ignored files
-/shelf/
-/workspace.xml
-.idea/
-MeadDataReader/.idea
+# Python
+__pycache__/
+.venv/
